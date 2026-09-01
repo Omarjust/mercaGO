@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}MercaGo · Mercado Abasto{% endblock %}
 {% block content %}
 <header class="app-header">
   <a href="{% url 'home' %}" class="icon-button" aria-label="Volver">←</a>
-  <a href="{% url 'home' %}" class="brand"><i>M</i><span>MercaGo<small>by Yango</small></span></a>
+  <a href="{% url 'home' %}" class="brand"><img class="brand-logo" src="{% static 'images/mercago-logo.png' %}" alt=""><span>MercaGo<small>by Yango</small></span></a>
   <a href="{% url 'order_history' %}" class="icon-button" aria-label="Mis compras">☷</a>
 </header>
 

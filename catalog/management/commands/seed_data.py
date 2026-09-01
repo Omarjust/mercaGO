@@ -1,53 +1,84 @@
+import json
 import os
+from pathlib import Path
+
 from django.contrib.auth import get_user_model
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.utils.text import slugify
+
 from core.models import Address
 from catalog.models import Category, Market, Product
+
+
+DEFAULT_PRODUCTS_FILE = Path(__file__).resolve().parents[2] / "seed" / "products.json"
 
 
 class Command(BaseCommand):
     help = "Crea el catálogo, direcciones y usuario administrador de demostración."
 
-    def handle(self, *args, **options):
-        market, _ = Market.objects.update_or_create(
-            name="Mercado Abasto",
-            defaults={"city": "Santa Cruz de la Sierra", "description": "Productos frescos elegidos por expertos", "is_available": True},
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--products-file",
+            type=Path,
+            default=DEFAULT_PRODUCTS_FILE,
+            help="Archivo JSON con mercado, categorías y productos.",
         )
-        category_data = [
-            ("Frutas", "🍊"), ("Verduras", "🥕"), ("Carnes", "🥩"),
-            ("Pollo", "🍗"), ("Abarrotes", "🛒"), ("Lácteos", "🥛"), ("Otros", "🧺"),
-        ]
+
+    def handle(self, *args, **options):
+        products_file = options["products_file"]
+        try:
+            seed = json.loads(products_file.read_text(encoding="utf-8"))
+        except FileNotFoundError as exc:
+            raise CommandError(f"No existe el archivo seed: {products_file}") from exc
+        except json.JSONDecodeError as exc:
+            raise CommandError(f"El archivo seed no contiene JSON válido: {exc}") from exc
+
+        market_data = seed.get("market", {})
+        if not market_data.get("name"):
+            raise CommandError("El seed debe incluir market.name.")
+
+        market, _ = Market.objects.update_or_create(
+            name=market_data["name"],
+            defaults={
+                "city": market_data.get("city", ""),
+                "description": market_data.get("description", ""),
+                "is_available": market_data.get("is_available", True),
+            },
+        )
         categories = {}
-        for order, (name, icon) in enumerate(category_data):
-            category, _ = Category.objects.update_or_create(slug=slugify(name), defaults={"name": name, "icon": icon, "order": order})
+        for index, category_data in enumerate(seed.get("categories", [])):
+            name = category_data.get("name")
+            if not name:
+                raise CommandError(f"La categoría #{index + 1} no tiene nombre.")
+            category, _ = Category.objects.update_or_create(
+                slug=category_data.get("slug") or slugify(name),
+                defaults={
+                    "name": name,
+                    "icon": category_data.get("icon", "🧺"),
+                    "order": category_data.get("order", index),
+                },
+            )
             categories[name] = category
 
-        products = [
-            ("Tomate perita", "Verduras", "kg", "7.50", "🍅", True),
-            ("Papa holandesa", "Verduras", "kg", "7.00", "🥔", True),
-            ("Cebolla morada", "Verduras", "kg", "8.50", "🧅", True),
-            ("Zanahoria", "Verduras", "kg", "6.50", "🥕", True),
-            ("Lechuga romana", "Verduras", "unidad", "6.00", "🥬", True),
-            ("Banana", "Frutas", "kg", "8.00", "🍌", True),
-            ("Manzana roja", "Frutas", "kg", "17.00", "🍎", True),
-            ("Naranja", "Frutas", "kg", "9.00", "🍊", True),
-            ("Limón", "Frutas", "kg", "12.00", "🍋", True),
-            ("Pollo entero", "Pollo", "kg", "23.00", "🍗", True),
-            ("Pechuga de pollo", "Pollo", "kg", "35.00", "🥩", True),
-            ("Carne molida especial", "Carnes", "kg", "49.00", "🥩", True),
-            ("Arroz grano largo", "Abarrotes", "bolsa", "12.50", "🍚", False),
-            ("Azúcar blanca", "Abarrotes", "bolsa", "8.00", "🧂", False),
-            ("Aceite vegetal", "Abarrotes", "unidad", "15.50", "🫗", False),
-            ("Harina", "Abarrotes", "paquete", "9.00", "🌾", False),
-            ("Leche entera", "Lácteos", "unidad", "8.50", "🥛", False),
-            ("Queso criollo", "Lácteos", "kg", "42.00", "🧀", True),
-            ("Huevos de granja", "Otros", "docena", "17.00", "🥚", True),
-        ]
-        for name, category, unit, price, image, is_fresh in products:
+        products = seed.get("products", [])
+        for index, product_data in enumerate(products):
+            name = product_data.get("name")
+            category_name = product_data.get("category")
+            if not name:
+                raise CommandError(f"El producto #{index + 1} no tiene nombre.")
+            if category_name not in categories:
+                raise CommandError(f"El producto '{name}' usa una categoría inexistente: {category_name}")
             Product.objects.update_or_create(
-                market=market, name=name,
-                defaults={"category": categories[category], "unit": unit, "estimated_price": price, "image": image, "is_available": True, "is_fresh": is_fresh},
+                market=market,
+                name=name,
+                defaults={
+                    "category": categories[category_name],
+                    "unit": product_data.get("unit", "unidad"),
+                    "estimated_price": product_data.get("estimated_price", "0.00"),
+                    "image": product_data.get("image", "🧺"),
+                    "is_available": product_data.get("is_available", True),
+                    "is_fresh": product_data.get("is_fresh", True),
+                },
             )
 
         Address.objects.update_or_create(label="Casa", address="Avenida Cruz del Sur, 537", defaults={"reference": "Portón negro, timbre a la derecha"})

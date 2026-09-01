@@ -33,6 +33,13 @@ python manage.py runserver
 
 Abre `http://127.0.0.1:8000/`.
 
+Los productos demo se editan en `catalog/seed/products.json`. Para cargar otro
+archivo con la misma estructura:
+
+```bash
+python manage.py seed_data --products-file /ruta/al/products.json
+```
+
 ## Administración
 
 - URL: `http://127.0.0.1:8000/admin/`

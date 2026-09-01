@@ -1,0 +1,38 @@
+{
+  "market": {
+    "name": "Mercado Abasto",
+    "city": "Santa Cruz de la Sierra",
+    "description": "Productos frescos elegidos por expertos",
+    "is_available": true
+  },
+  "categories": [
+    {"name": "Frutas", "icon": "🍊", "order": 0},
+    {"name": "Verduras", "icon": "🥕", "order": 1},
+    {"name": "Carnes", "icon": "🥩", "order": 2},
+    {"name": "Pollo", "icon": "🍗", "order": 3},
+    {"name": "Abarrotes", "icon": "🛒", "order": 4},
+    {"name": "Lácteos", "icon": "🥛", "order": 5},
+    {"name": "Otros", "icon": "🧺", "order": 6}
+  ],
+  "products": [
+    {"name": "Tomate perita", "category": "Verduras", "unit": "kg", "estimated_price": "7.50", "image": "🍅", "is_fresh": true, "is_available": true},
+    {"name": "Papa holandesa", "category": "Verduras", "unit": "kg", "estimated_price": "7.00", "image": "🥔", "is_fresh": true, "is_available": true},
+    {"name": "Cebolla morada", "category": "Verduras", "unit": "kg", "estimated_price": "8.50", "image": "🧅", "is_fresh": true, "is_available": true},
+    {"name": "Zanahoria", "category": "Verduras", "unit": "kg", "estimated_price": "6.50", "image": "🥕", "is_fresh": true, "is_available": true},
+    {"name": "Lechuga romana", "category": "Verduras", "unit": "unidad", "estimated_price": "6.00", "image": "🥬", "is_fresh": true, "is_available": true},
+    {"name": "Banana", "category": "Frutas", "unit": "kg", "estimated_price": "8.00", "image": "🍌", "is_fresh": true, "is_available": true},
+    {"name": "Manzana roja", "category": "Frutas", "unit": "kg", "estimated_price": "17.00", "image": "🍎", "is_fresh": true, "is_available": true},
+    {"name": "Naranja", "category": "Frutas", "unit": "kg", "estimated_price": "9.00", "image": "🍊", "is_fresh": true, "is_available": true},
+    {"name": "Limón", "category": "Frutas", "unit": "kg", "estimated_price": "12.00", "image": "🍋", "is_fresh": true, "is_available": true},
+    {"name": "Pollo entero", "category": "Pollo", "unit": "kg", "estimated_price": "23.00", "image": "🍗", "is_fresh": true, "is_available": true},
+    {"name": "Pechuga de pollo", "category": "Pollo", "unit": "kg", "estimated_price": "35.00", "image": "🥩", "is_fresh": true, "is_available": true},
+    {"name": "Carne molida especial", "category": "Carnes", "unit": "kg", "estimated_price": "49.00", "image": "🥩", "is_fresh": true, "is_available": true},
+    {"name": "Arroz grano largo", "category": "Abarrotes", "unit": "bolsa", "estimated_price": "12.50", "image": "🍚", "is_fresh": false, "is_available": true},
+    {"name": "Azúcar blanca", "category": "Abarrotes", "unit": "bolsa", "estimated_price": "8.00", "image": "🧂", "is_fresh": false, "is_available": true},
+    {"name": "Aceite vegetal", "category": "Abarrotes", "unit": "unidad", "estimated_price": "15.50", "image": "🫗", "is_fresh": false, "is_available": true},
+    {"name": "Harina", "category": "Abarrotes", "unit": "paquete", "estimated_price": "9.00", "image": "🌾", "is_fresh": false, "is_available": true},
+    {"name": "Leche entera", "category": "Lácteos", "unit": "unidad", "estimated_price": "8.50", "image": "🥛", "is_fresh": false, "is_available": true},
+    {"name": "Queso criollo", "category": "Lácteos", "unit": "kg", "estimated_price": "42.00", "image": "🧀", "is_fresh": true, "is_available": true},
+    {"name": "Huevos de granja", "category": "Otros", "unit": "docena", "estimated_price": "17.00", "image": "🥚", "is_fresh": true, "is_available": true}
+  ]
+}
