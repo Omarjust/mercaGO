@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Yango · Inicio{% endblock %}
+{% block shell_class %}home-shell{% endblock %}
+{% block content %}
+<section class="yango-home">
+  <header class="home-header">
+    <div>
+      <div class="yango-logo">YANGO</div>
+      <div class="current-address">Avenida Cruz del Sur, 537 <span>›</span></div>
+    </div>
+    <button class="menu-button" type="button" data-coming-soon aria-label="Abrir menú"><i></i><i></i><i></i></button>
+  </header>
+
+  <div class="primary-services">
+    <button type="button" class="primary-service" data-coming-soon><span class="service-visual food-visual">🍔 <b>▣</b></span><strong>Comida</strong></button>
+    <button type="button" class="primary-service" data-coming-soon><span class="service-visual">🏍️</span><strong>Bike</strong></button>
+    <button type="button" class="primary-service" data-coming-soon><span class="service-visual">📦</span><strong>Envíos</strong></button>
+    <button type="button" class="primary-service" data-coming-soon><span class="service-visual">🚘</span><strong>Viajes <small>· desde 4 min</small></strong></button>
+  </div>
+
+  <div class="secondary-scroll" aria-label="Servicios de Yango">
+    <button type="button" class="secondary-service" data-coming-soon><span>🛍️</span><b>Tiendas</b></button>
+    <a href="{% url 'catalog' %}" class="secondary-service mercago-service"><span>🧺<em>●</em></span><b>MercaGo</b><small>Nuevo</small></a>
+    <button type="button" class="secondary-service" data-coming-soon><span>⭐</span><b>Lugares</b></button>
+    <button type="button" class="secondary-service" data-coming-soon><span>🚌</span><b>Transporte</b></button>
+    <button type="button" class="secondary-service" data-coming-soon><span>🧭</span><b>Navegador</b></button>
+    <button type="button" class="secondary-service" data-coming-soon><span>🚚</span><b>Cargo</b></button>
+  </div>
+  <div class="carousel-dots"><i></i><i></i></div>
+
+  <button type="button" class="destination-bar" data-coming-soon><span class="tiny-car">🚘</span><strong>¿A dónde vas?</strong><b>›</b></button>
+  <div class="recent-places">
+    <button type="button" data-coming-soon><span>🏋️</span><div><strong>NovaFit Premium Santos Dumont</strong><small>Santa Cruz de la Sierra, Avenida Santos Dumont</small></div></button>
+    <button type="button" data-coming-soon><span>🔖</span><div><strong>Casa papá Jorge</strong><small>Los Tajibos</small></div></button>
+  </div>
+  <div class="promo-grid">
+    <article class="promo promo-burger"><span class="promo-art">🍔 🍟</span><div><strong>Combo para compartir</strong><small>Toby Express · 40–50 min</small></div></article>
+    <article class="promo promo-chicken"><div><b>ECONÓMICO<br>POR 17 BS</b><small>Entrega rápida</small></div><span class="promo-art">🍗🍟</span></article>
+  </div>
+</section>
+{% endblock %}

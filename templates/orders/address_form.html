@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Nueva ubicación · MercaGo{% endblock %}
+{% block content %}
+<header class="app-header sticky"><a href="{% if next_name == 'checkout' %}{% url 'checkout' %}{% else %}{% url 'catalog' %}{% endif %}" class="icon-button">←</a><h1>Ubicación de entrega</h1><span class="icon-button ghost"></span></header>
+<form method="post" class="page-pad location-form">{% csrf_token %}<input type="hidden" name="next" value="{{ next_name }}">
+  <div class="title-block"><span class="eyebrow">NUEVA UBICACIÓN</span><h2>¿Dónde entregamos tu compra?</h2><p>Escribe la dirección y una referencia clara para que el conductor pueda encontrarte.</p></div>
+  <div class="location-visual"><span>📍</span><div><b>Ubicación manual</b><small>No usamos mapas ni GPS reales en este MVP.</small></div></div>
+  <label>{{ form.label.label }}{{ form.label }}{{ form.label.errors }}</label>
+  <label>{{ form.address.label }}{{ form.address }}{{ form.address.errors }}</label>
+  <label>{{ form.reference.label }}{{ form.reference }}{{ form.reference.errors }}</label>
+  <button class="button full" type="submit"><span>Guardar ubicación</span><span>›</span></button>
+</form>
+{% endblock %}

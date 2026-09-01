@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Mis compras · MercaGo{% endblock %}
+{% block content %}
+<header class="app-header sticky"><a href="{% url 'catalog' %}" class="icon-button">←</a><h1>Mis compras</h1><span class="icon-button ghost"></span></header>
+<section class="page-pad history-page">
+  <div class="title-block"><span class="eyebrow">TUS PEDIDOS</span><h2>Compra con tranquilidad</h2><p>Aquí puedes seguir compras activas y revisar las anteriores.</p></div>
+  {% for order in orders %}
+  <a href="{% url 'order_detail' order.pk %}" class="history-card">
+    <div class="history-icon">🧺</div><div class="history-main"><span class="status-pill status-{{ order.status|lower }}">{{ order.get_status_display }}</span><h3>Mercado Abasto</h3><p>{{ order.items.count }} producto{{ order.items.count|pluralize }} · {{ order.created_at|date:"d M Y" }}</p><small>{{ order.reference }}</small></div><div class="history-total"><strong>Bs {{ order.display_total|floatformat:2 }}</strong><span>›</span></div>
+  </a>
+  {% empty %}<div class="empty-state"><span>🧾</span><h3>Aún no tienes compras</h3><p>Tu próxima compra del Mercado Abasto aparecerá aquí.</p><a href="{% url 'catalog' %}" class="button">Empezar una lista</a></div>{% endfor %}
+</section>
+{% endblock %}

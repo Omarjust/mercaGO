@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.venv/
+venv/
+db.sqlite3
+staticfiles/
+.env
+outputs/
+work/
+.coverage
+htmlcov/

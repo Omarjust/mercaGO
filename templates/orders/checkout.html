@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Programar entrega · MercaGo{% endblock %}
+{% block content %}
+<header class="app-header sticky"><a href="{% url 'cart' %}" class="icon-button">←</a><h1>Confirmar pedido</h1><span class="icon-button ghost"></span></header>
+<form method="post" class="page-pad checkout-form">{% csrf_token %}
+  <div class="title-block"><span class="eyebrow">ÚLTIMO PASO</span><h2>¿Cuándo quieres recibirla?</h2><p>Programa tu compra para que seleccionemos todo con calma y frescura.</p><div class="minimum-check">✓ Mínimo de compra Bs {{ minimum_order_total|floatformat:0 }} alcanzado</div></div>
+  {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+  <section class="checkout-section"><h3>Quién recibe</h3><label>{{ form.guest_name.label }}{{ form.guest_name }}{{ form.guest_name.errors }}</label></section>
+  <section class="checkout-section"><div class="checkout-section-title"><h3>Dirección de entrega</h3><a href="{% url 'address_create' %}?next=checkout">+ Nueva ubicación</a></div><label>{{ form.address.label }}{{ form.address }}{{ form.address.errors }}</label><div class="map-placeholder"><span>📍</span><div><b>{% if current_address %}{{ current_address.address }}{% else %}Santa Cruz de la Sierra{% endif %}</b><small>{% if current_address.reference %}{{ current_address.reference }}{% else %}Agrega una referencia para facilitar la entrega{% endif %}</small></div></div></section>
+  <section class="checkout-section"><h3>Fecha y horario</h3><label>{{ form.scheduled_date.label }}{{ form.scheduled_date }}{{ form.scheduled_date.errors }}</label><label>{{ form.scheduled_window.label }}{{ form.scheduled_window }}{{ form.scheduled_window.errors }}</label></section>
+  <section class="order-summary"><h3>Resumen</h3>{% for entry in entries %}<div><span>{{ entry.product.name }} <small>× {{ entry.quantity|floatformat:-2 }} {{ entry.product.unit }}</small></span><b>~ Bs {{ entry.line_total|floatformat:2 }}</b></div>{% endfor %}<hr><div><span>Subtotal de productos</span><b>~ Bs {{ total|floatformat:2 }}</b></div><div><span>Servicio MercaGo</span><b>Bs {{ service_fee|floatformat:2 }}</b></div><div><span>Envío</span><b>Bs {{ delivery_fee|floatformat:2 }}</b></div><hr><div class="summary-total"><span>Total estimado</span><strong>~ Bs {{ grand_total|floatformat:2 }}</strong></div><p>El precio final puede cambiar según el mercado. Nunca superaremos la tolerancia autorizada sin consultarte.</p></section>
+  <button type="submit" class="button full">Confirmar pedido</button>
+</form>
+{% endblock %}
+{% block scripts %}<script>document.querySelector('input[type=date]')?.setAttribute('min','{{ min_date }}')</script>{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}MercaGo · Mercado Abasto{% endblock %}
+{% block content %}
+<header class="app-header">
+  <a href="{% url 'home' %}" class="icon-button" aria-label="Volver">←</a>
+  <a href="{% url 'home' %}" class="brand"><i>M</i><span>MercaGo<small>by Yango</small></span></a>
+  <a href="{% url 'order_history' %}" class="icon-button" aria-label="Mis compras">☷</a>
+</header>
+
+<section class="catalog-hero page-pad">
+  <a href="{% url 'address_create' %}?next=catalog" class="delivery-address"><span>📍</span><p><small>Entregar en · Toca para cambiar</small><b>{% if current_address %}{{ current_address.address }}{% else %}Agregar ubicación de entrega{% endif %}</b></p><i>›</i></a>
+  <div class="hero-copy"><span class="eyebrow">MERCADO ABASTO</span><h1>El mercado llega<br>a tu puerta.</h1><p>Productos frescos elegidos según tus preferencias, sin salir de casa.</p></div>
+  <form class="search-bar" method="get">
+    <span>⌕</span><input type="search" name="q" value="{{ query }}" placeholder="Buscar tomate, papa, carne..." aria-label="Buscar productos">
+    {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
+  </form>
+</section>
+
+<section class="market-card page-pad">
+  <div class="market-illustration">🏪<span>🍎🥕</span></div>
+  <div><small>Mercado disponible</small><h2>{{ market.name|default:"Mercado Abasto" }}</h2><p>Productos frescos · Santa Cruz</p><span class="available"><i></i> Disponible hoy</span></div>
+</section>
+
+<section class="catalog-section">
+  <div class="section-heading page-pad"><h2>Categorías</h2><a href="{% url 'catalog' %}">Ver todas</a></div>
+  <nav class="category-scroll">
+    <a href="{% url 'catalog' %}" class="category-chip {% if not active_category %}active{% endif %}"><span>✨</span><b>Todo</b></a>
+    {% for category in categories %}<a href="?category={{ category.slug }}{% if query %}&q={{ query }}{% endif %}" class="category-chip {% if active_category == category.slug %}active{% endif %}"><span>{{ category.icon }}</span><b>{{ category.name }}</b></a>{% endfor %}
+  </nav>
+</section>
+
+<section class="products-section page-pad">
+  <div class="section-heading"><div><h2>{% if query %}Resultados para “{{ query }}”{% elif active_category %}Productos seleccionados{% else %}Más pedidos{% endif %}</h2><p>Precios estimados del mercado</p></div></div>
+  <div class="product-grid">
+    {% for product in products %}
+      <article class="product-card">
+        <a href="{% url 'preferences' product.id %}" class="product-image"><span>{{ product.image }}</span>{% if product.is_fresh %}<small>Fresco</small>{% endif %}</a>
+        <div class="product-info"><h3>{{ product.name }}</h3><small>Precio estimado</small><p><strong>~ Bs {{ product.estimated_price|floatformat:2 }}</strong> / {{ product.get_unit_display }}</p></div>
+        <form method="post" action="{% url 'add_to_cart' product.id %}" class="quick-add">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button type="submit" aria-label="Agregar {{ product.name }}">+</button></form>
+      </article>
+    {% empty %}<div class="empty-state"><span>🔎</span><h3>No encontramos productos</h3><p>Prueba con otra búsqueda o categoría.</p><a href="{% url 'catalog' %}" class="button secondary">Limpiar búsqueda</a></div>{% endfor %}
+  </div>
+</section>
+
+{% if cart_count %}<a href="{% url 'cart' %}" class="floating-cart"><span><b>{{ cart_count }} producto{{ cart_count|pluralize }}</b><small>{% if minimum_reached %}Mínimo de compra alcanzado{% else %}Faltan Bs {{ minimum_remaining|floatformat:2 }} para el mínimo{% endif %}</small></span><strong>~ Bs {{ cart_estimated_total|floatformat:2 }} ›</strong></a>{% endif %}
+{% endblock %}

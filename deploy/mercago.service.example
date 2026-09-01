@@ -1,0 +1,27 @@
+[Unit]
+Description=MercaGo Django (Gunicorn)
+After=network.target
+
+[Service]
+Type=notify
+User=deploy
+Group=www-data
+WorkingDirectory=/srv/mercago/app
+EnvironmentFile=/etc/mercago/mercago.env
+RuntimeDirectory=mercago
+RuntimeDirectoryMode=0755
+UMask=0007
+ExecStart=/srv/mercago/app/.venv/bin/gunicorn \
+    --workers 3 \
+    --bind unix:/run/mercago/gunicorn.sock \
+    --access-logfile - \
+    --error-logfile - \
+    mercago.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

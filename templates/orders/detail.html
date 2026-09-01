@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Pedido {{ order.reference }} · MercaGo{% endblock %}
+{% block content %}
+<header class="app-header sticky"><a href="{% url 'order_history' %}" class="icon-button">←</a><h1>Seguimiento</h1><span class="icon-button ghost"></span></header>
+<section class="tracking-hero page-pad">
+  {% if order.status == "DELIVERED" %}<div class="tracking-illustration delivered">✓</div><span class="eyebrow">PEDIDO ENTREGADO</span><h2>¡Tu mercado llegó!</h2><p>Esperamos que disfrutes cada producto.</p>
+  {% elif order.status == "CANCELLED" %}<div class="tracking-illustration cancelled">×</div><span class="eyebrow">PEDIDO CANCELADO</span><h2>Este pedido fue cancelado</h2>
+  {% else %}<div class="tracking-illustration">🛵<i></i></div><span class="eyebrow">{{ order.reference }}</span><h2>{{ order.get_status_display }}</h2><p>Entrega {{ order.scheduled_date|date:"l d \d\e F" }}, {{ order.scheduled_window }}</p>{% endif %}
+</section>
+
+{% if pending_issues %}<section class="issues-section page-pad"><div class="urgent-heading"><span>!</span><div><h2>Tu comprador necesita tu ayuda</h2><p>Responde para continuar con la compra.</p></div></div>
+  {% for issue in pending_issues %}<article class="issue-card"><span class="issue-type">{{ issue.get_type_display }}</span><h3>{{ issue.order_item.product.name }}</h3><p>{{ issue.message }}</p><div class="issue-comparison"><div><small>Precio estimado</small><b>Bs {{ issue.order_item.estimated_unit_price|floatformat:2 }} / {{ issue.order_item.product.unit }}</b></div>{% if issue.proposed_product_name %}<div><small>Alternativa</small><b>{{ issue.proposed_product_name }}</b></div>{% endif %}{% if issue.proposed_price %}<div><small>Precio encontrado</small><b>Bs {{ issue.proposed_price|floatformat:2 }} / {{ issue.order_item.product.unit }}</b></div>{% endif %}</div><div class="issue-actions"><form method="post" action="{% url 'respond_issue' order.pk issue.pk %}">{% csrf_token %}<button class="button" name="decision" value="accept">{% if issue.type == "SUBSTITUTION" %}Aceptar sustitución{% else %}Aceptar{% endif %}</button></form><form method="post" action="{% url 'respond_issue' order.pk issue.pk %}">{% csrf_token %}<button class="button secondary" name="decision" value="reject">{% if issue.type == "SUBSTITUTION" %}No comprar{% else %}Rechazar{% endif %}</button></form></div></article>{% endfor %}
+</section>{% endif %}
+
+<section class="page-pad timeline-section"><h2>Estado de tu compra</h2><div class="timeline">{% for step in timeline %}<div class="timeline-step {% if step.done %}done{% endif %} {% if step.active %}active{% endif %}"><span>{% if step.done %}✓{% endif %}</span><div><h3>{{ step.label }}</h3><p>{{ step.detail }}</p></div></div>{% endfor %}</div></section>
+
+<section class="page-pad buyer-card"><div class="buyer-avatar">CG</div><div><small>Tu comprador MercaGo</small><h3>Carlos G.</h3><p><span>★ 4.9</span> · 325 compras realizadas</p></div><button type="button" data-coming-soon>•••</button></section>
+
+<section class="page-pad order-detail-card"><div class="section-heading"><h2>Tu lista</h2><span>{{ order.items.count }} producto{{ order.items.count|pluralize }}</span></div>{% for item in order.items.all %}<div class="order-item-row"><span class="mini-emoji">{{ item.product.image }}</span><div><b>{{ item.product.name }}</b><small>{{ item.quantity|floatformat:-2 }} {{ item.product.unit }} · {{ item.get_status_display }}</small></div><strong>~ Bs {{ item.estimated_line_total|floatformat:2 }}</strong></div>{% endfor %}<div class="detail-fees"><div><span>Productos</span><b>~ Bs {{ order.products_subtotal|floatformat:2 }}</b></div><div><span>Servicio MercaGo</span><b>Bs {{ order.service_fee|floatformat:2 }}</b></div><div><span>Envío</span><b>Bs {{ order.delivery_fee|floatformat:2 }}</b></div></div><hr><div class="summary-total"><span>Total estimado</span><strong>Bs {{ order.estimated_total|floatformat:2 }}</strong></div></section>
+
+<section class="page-pad delivery-card"><span>📍</span><div><small>Entregar en · {{ order.address.label }}</small><h3>{{ order.address.address }}</h3><p>{{ order.address.reference }}</p></div></section>
+{% endblock %}

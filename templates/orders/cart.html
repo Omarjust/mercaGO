@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Mi lista · MercaGo{% endblock %}
+{% block content %}
+<header class="app-header sticky"><a href="{% url 'catalog' %}" class="icon-button">←</a><h1>Mi lista</h1><a href="{% url 'order_history' %}" class="icon-button">☷</a></header>
+<section class="page-pad cart-page">
+  <div class="title-block"><span class="eyebrow">MERCADO ABASTO</span><h2>Tu compra del mercado</h2><p>Indica exactamente cómo quieres recibir tus productos.</p><div class="minimum-notice"><span>🧺</span><div><b>Mínimo de compra Bs {{ minimum_total|floatformat:0 }}</b><small>{% if minimum_reached %}Ya puedes continuar con tu pedido.{% else %}Agrega Bs {{ minimum_remaining|floatformat:2 }} más para continuar.{% endif %}</small></div></div></div>
+  {% for entry in entries %}
+  <article class="cart-row">
+    <div class="cart-thumb">{{ entry.product.image }}</div>
+    <div class="cart-product"><h3>{{ entry.product.name }}</h3><p>~ Bs {{ entry.line_total|floatformat:2 }} · {{ entry.product.unit }}</p>
+      {% if entry.preferences %}<a href="{% url 'preferences' entry.product.id %}" class="preference-summary">{{ entry.preferences.freshness }} · {{ entry.preferences.size }} · Editar</a>{% else %}<a href="{% url 'preferences' entry.product.id %}" class="preference-summary warning">+ Agregar preferencias</a>{% endif %}
+    </div>
+    <form class="quantity-control" method="post" action="{% url 'update_cart' entry.product.id %}">{% csrf_token %}<button name="action" value="decrease">−</button><b>{{ entry.quantity|floatformat:-2 }}</b><button name="action" value="increase">+</button></form>
+  </article>
+  {% empty %}<div class="empty-state"><span>🧺</span><h3>Tu lista está vacía</h3><p>Explora productos frescos del Mercado Abasto.</p><a href="{% url 'catalog' %}" class="button">Ver productos</a></div>{% endfor %}
+  {% if entries %}
+  <div class="estimate-box fee-breakdown"><div><span>Productos</span><b>~ Bs {{ total|floatformat:2 }}</b></div><div><span>Servicio MercaGo</span><b>Bs {{ service_fee|floatformat:2 }}</b></div><div><span>Envío</span><b>Bs {{ delivery_fee|floatformat:2 }}</b></div><hr><div class="fee-total"><strong>Total estimado</strong><strong>~ Bs {{ grand_total|floatformat:2 }}</strong></div><p>Los precios de los productos pueden variar durante la compra. Te consultaremos si superan tu tolerancia.</p></div>
+  {% if minimum_reached %}<a href="{% url 'checkout' %}" class="button full">Continuar <span>~ Bs {{ grand_total|floatformat:2 }}</span></a>{% else %}<div class="button full disabled" aria-disabled="true"><span>Mínimo Bs {{ minimum_total|floatformat:0 }}</span><span>Faltan Bs {{ minimum_remaining|floatformat:2 }}</span></div>{% endif %}
+  {% endif %}
+</section>
+{% endblock %}
